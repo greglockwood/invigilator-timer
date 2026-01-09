@@ -282,11 +282,11 @@ export default function SessionScreen() {
             <Text style={styles.saveButtonText}>Save Session</Text>
           </TouchableOpacity>
 
-          {isNew && (
-            <TouchableOpacity style={styles.activateButton} onPress={handleActivateExam}>
-              <Text style={styles.activateButtonText}>Activate Exam Start</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity style={styles.activateButton} onPress={handleActivateExam}>
+            <Text style={styles.activateButtonText}>
+              {isNew ? 'Activate Exam Start' : 'Go to Exam'}
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
