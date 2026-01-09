@@ -10,6 +10,10 @@ build/
 .expo-shared/
 web-build/
 
+# Generated Android/iOS directories at root (use apps/mobile/android instead)
+/android/
+/ios/
+
 # Native
 *.aab
 *.apk
