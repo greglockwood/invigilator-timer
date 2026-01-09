@@ -1,0 +1,15 @@
+{
+  "name": "invigilator-timer",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "mobile": "cd apps/mobile && npm start",
+    "mobile:android": "cd apps/mobile && npm run android",
+    "mobile:ios": "cd apps/mobile && npm run ios",
+    "mobile:web": "cd apps/mobile && npm run web"
+  }
+}
