@@ -12,10 +12,14 @@ const DB_NAME = 'invigilator_timer.db';
  * Initialize the database and create tables if they don't exist.
  */
 export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
-  const db = await SQLite.openDatabaseAsync(DB_NAME);
+  try {
+    console.log('[DB] Opening database:', DB_NAME);
+    const db = await SQLite.openDatabaseAsync(DB_NAME);
+    console.log('[DB] Database opened successfully');
 
-  // Create sessions table
-  await db.execAsync(`
+    // Create sessions table
+    console.log('[DB] Creating sessions table...');
+    await db.execAsync(`
     CREATE TABLE IF NOT EXISTS sessions (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -52,14 +56,20 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
     );
   `);
 
-  // Create indices for performance
-  await db.execAsync(`
-    CREATE INDEX IF NOT EXISTS idx_desks_session_id ON desks(session_id);
-    CREATE INDEX IF NOT EXISTS idx_timer_events_desk_id ON timer_events(desk_id);
-    CREATE INDEX IF NOT EXISTS idx_sessions_created_at ON sessions(created_at DESC);
-  `);
+    // Create indices for performance
+    console.log('[DB] Creating indices...');
+    await db.execAsync(`
+      CREATE INDEX IF NOT EXISTS idx_desks_session_id ON desks(session_id);
+      CREATE INDEX IF NOT EXISTS idx_timer_events_desk_id ON timer_events(desk_id);
+      CREATE INDEX IF NOT EXISTS idx_sessions_created_at ON sessions(created_at DESC);
+    `);
 
-  return db;
+    console.log('[DB] Database initialization complete');
+    return db;
+  } catch (error) {
+    console.error('[DB] Failed to initialize database:', error);
+    throw error;
+  }
 }
 
 /**
@@ -68,8 +78,10 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
  */
 export async function saveSession(db: SQLite.SQLiteDatabase, session: Session): Promise<void> {
   const now = Date.now();
+  console.log('[DB] Saving session:', session.id, session.name);
 
-  await db.withTransactionAsync(async () => {
+  try {
+    await db.withTransactionAsync(async () => {
     // Upsert session
     await db.runAsync(
       `INSERT INTO sessions (id, name, exam_duration_minutes, reading_time_minutes, start_time_epoch_ms, created_at, updated_at)
@@ -118,7 +130,12 @@ export async function saveSession(db: SQLite.SQLiteDatabase, session: Session): 
         );
       }
     }
-  });
+    });
+    console.log('[DB] Session saved successfully');
+  } catch (error) {
+    console.error('[DB] Failed to save session:', error);
+    throw error;
+  }
 }
 
 /**

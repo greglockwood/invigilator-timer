@@ -79,25 +79,46 @@ export const useAppStore = create<AppState>((set, get) => ({
    * Initialize database and load cached session if available.
    */
   initialize: async () => {
-    const db = await initDatabase();
-    set({ db, isInitialized: true });
+    try {
+      console.log('[Store] Initializing database...');
+      const db = await initDatabase();
+      console.log('[Store] Database initialized successfully');
+      set({ db, isInitialized: true });
 
-    // Refresh sessions list
-    await get().refreshSessionsList();
+      // Refresh sessions list
+      await get().refreshSessionsList();
+      console.log('[Store] Sessions list refreshed');
+    } catch (error) {
+      console.error('[Store] Failed to initialize database:', error);
+      throw error;
+    }
   },
 
   /**
    * Create a new session and save to database.
    */
   createSession: async (session: Session) => {
-    const { db } = get();
-    if (!db) throw new Error('Database not initialized');
+    try {
+      console.log('[Store] Creating session:', session.name);
+      const { db } = get();
+      if (!db) {
+        console.error('[Store] Database not initialized');
+        throw new Error('Database not initialized');
+      }
 
-    await saveSession(db, session);
-    set({ activeSession: session });
-    setLastActiveSessionId(session.id);
+      console.log('[Store] Saving session to database...');
+      await saveSession(db, session);
+      console.log('[Store] Session saved successfully');
 
-    await get().refreshSessionsList();
+      set({ activeSession: session });
+      setLastActiveSessionId(session.id);
+
+      await get().refreshSessionsList();
+      console.log('[Store] Session created successfully');
+    } catch (error) {
+      console.error('[Store] Failed to create session:', error);
+      throw error;
+    }
   },
 
   /**
