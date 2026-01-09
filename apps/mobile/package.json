@@ -9,10 +9,21 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@tamagui/core": "^1.144.1",
     "expo": "~54.0.31",
+    "expo-constants": "~18.0.13",
+    "expo-keep-awake": "^15.0.8",
+    "expo-linking": "~8.0.11",
+    "expo-router": "~6.0.21",
+    "expo-sqlite": "^16.0.10",
     "expo-status-bar": "~3.0.9",
     "react": "19.1.0",
-    "react-native": "0.81.5"
+    "react-native": "0.81.5",
+    "react-native-mmkv": "^4.1.1",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "tamagui": "^1.144.1",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
