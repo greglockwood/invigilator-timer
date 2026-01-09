@@ -21,9 +21,9 @@ import {
   sortDesks,
   formatTimeAMPM,
   formatCountdown,
-  getColourCue,
   isDeskFinished,
 } from '@invigilator-timer/core';
+import { colors, getTimerColor, getDeskCardColors } from '../../src/theme/colors';
 
 export default function ExamScreen() {
   useKeepAwake(); // Keep screen awake during exam
@@ -197,7 +197,7 @@ export default function ExamScreen() {
                 </View>
                 <View style={styles.generalColumn}>
                   <Text style={styles.label}>Time Remaining</Text>
-                  <Text style={[styles.mediumTime, getTimeColourStyle(generalRemaining)]}>
+                  <Text style={[styles.mediumTime, { color: getTimerColor(generalRemaining) }]}>
                     {formatCountdown(generalRemaining)}
                   </Text>
                 </View>
@@ -219,16 +219,14 @@ export default function ExamScreen() {
                   timerState
                 );
                 const finished = isDeskFinished(deskRemaining);
-                const colourCue = getColourCue(deskRemaining);
+                const { backgroundColor, borderColor } = getDeskCardColors(deskRemaining, finished);
 
                 return (
                   <View
                     key={desk.id}
                     style={[
                       styles.deskCard,
-                      finished && styles.deskCardFinished,
-                      colourCue === 'red' && !finished && styles.deskCardRed,
-                      colourCue === 'amber' && !finished && styles.deskCardAmber,
+                      { backgroundColor, borderColor },
                     ]}
                   >
                     <View style={styles.deskHeader}>
@@ -245,7 +243,7 @@ export default function ExamScreen() {
                       </View>
                       <View style={styles.deskColumn}>
                         <Text style={styles.deskLabel}>Remaining</Text>
-                        <Text style={[styles.deskTime, getTimeColourStyle(deskRemaining)]}>
+                        <Text style={[styles.deskTime, { color: getTimerColor(deskRemaining) }]}>
                           {formatCountdown(deskRemaining)}
                         </Text>
                       </View>
@@ -263,7 +261,7 @@ export default function ExamScreen() {
                             }
                             keyboardType="number-pad"
                             placeholder="0"
-                            placeholderTextColor="#999"
+                            placeholderTextColor={colors.inputPlaceholder}
                           />
                           <TouchableOpacity
                             style={styles.dpButton}
@@ -307,34 +305,27 @@ export default function ExamScreen() {
   );
 }
 
-function getTimeColourStyle(remainingMs: number) {
-  const cue = getColourCue(remainingMs);
-  if (cue === 'green') return styles.timeGreen;
-  if (cue === 'amber') return styles.timeAmber;
-  return styles.timeRed;
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: colors.border,
   },
   examName: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   currentTime: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#666',
+    color: colors.textSecondary,
   },
   content: {
     flex: 1,
@@ -346,7 +337,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 18,
-    color: '#666',
+    color: colors.textSecondary,
   },
   preExamState: {
     padding: 40,
@@ -354,31 +345,31 @@ const styles = StyleSheet.create({
   },
   preExamText: {
     fontSize: 24,
-    color: '#666',
+    color: colors.textSecondary,
     marginBottom: 24,
   },
   activateButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingVertical: 20,
     paddingHorizontal: 40,
     borderRadius: 12,
   },
   activateButtonText: {
-    color: '#fff',
+    color: colors.textOnPrimary,
     fontSize: 20,
     fontWeight: '600',
   },
   readingTimeSection: {
-    backgroundColor: '#FFF9E6',
+    backgroundColor: colors.readingTimeBg,
     padding: 24,
     alignItems: 'center',
     borderBottomWidth: 2,
-    borderBottomColor: '#FFD700',
+    borderBottomColor: colors.readingTimeBorder,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#666',
+    color: colors.textSecondary,
     marginBottom: 8,
     letterSpacing: 1,
   },
@@ -387,18 +378,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   readingTime: {
-    color: '#FF9500',
+    color: colors.readingTime,
   },
   subtitle: {
     fontSize: 14,
-    color: '#999',
+    color: colors.textTertiary,
     marginTop: 8,
   },
   generalSection: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: colors.border,
   },
   generalRow: {
     flexDirection: 'row',
@@ -409,36 +400,24 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   mediumTime: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.textPrimary,
   },
   desksSection: {
     padding: 20,
   },
   deskCard: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
     borderWidth: 2,
-    borderColor: '#34C759',
-  },
-  deskCardAmber: {
-    borderColor: '#FF9500',
-    backgroundColor: '#FFF9E6',
-  },
-  deskCardRed: {
-    borderColor: '#FF3B30',
-    backgroundColor: '#FFE6E6',
-  },
-  deskCardFinished: {
-    borderColor: '#666',
-    backgroundColor: '#F0F0F0',
+    borderColor: colors.timerGreen,
   },
   deskHeader: {
     marginBottom: 12,
@@ -446,7 +425,7 @@ const styles = StyleSheet.create({
   deskTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.textPrimary,
   },
   deskInfo: {
     flexDirection: 'row',
@@ -455,20 +434,20 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#e0e0e0',
+    borderColor: colors.border,
   },
   deskColumn: {
     alignItems: 'center',
   },
   deskLabel: {
     fontSize: 12,
-    color: '#666',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   deskTime: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.textPrimary,
   },
   dpControls: {
     marginTop: 8,
@@ -476,7 +455,7 @@ const styles = StyleSheet.create({
   dpLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#333',
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   dpRow: {
@@ -485,30 +464,30 @@ const styles = StyleSheet.create({
   },
   dpInput: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.inputBackground,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.inputBorder,
     borderRadius: 8,
     padding: 12,
     fontSize: 18,
-    color: '#333',
+    color: colors.inputText,
     textAlign: 'center',
   },
   dpButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },
   dpButtonText: {
-    color: '#fff',
+    color: colors.textOnPrimary,
     fontSize: 16,
     fontWeight: '600',
   },
   dpTotal: {
     fontSize: 12,
-    color: '#666',
+    color: colors.textSecondary,
     marginTop: 6,
   },
   controls: {
@@ -517,29 +496,20 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   controlButton: {
-    backgroundColor: '#FF9500',
+    backgroundColor: colors.warning,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
   },
   resumeButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.success,
   },
   endButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: colors.danger,
   },
   controlButtonText: {
-    color: '#fff',
+    color: colors.textOnPrimary,
     fontSize: 18,
     fontWeight: '600',
-  },
-  timeGreen: {
-    color: '#34C759',
-  },
-  timeAmber: {
-    color: '#FF9500',
-  },
-  timeRed: {
-    color: '#FF3B30',
   },
 });

@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useAppStore } from '../src/store/app-store';
 import { formatTimeAMPM } from '@invigilator-timer/core';
 import { createDemoSession } from '../src/utils/demo-seed';
+import { colors, opacity } from '../src/theme/colors';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -123,25 +124,25 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: colors.border,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.textPrimary,
   },
   content: {
     flex: 1,
     padding: 20,
   },
   newButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,
@@ -149,22 +150,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   newButtonText: {
-    color: '#fff',
+    color: colors.textOnPrimary,
     fontSize: 18,
     fontWeight: '600',
   },
   demoButton: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#007AFF',
+    borderColor: colors.primary,
     marginBottom: 24,
   },
   demoButtonText: {
-    color: '#007AFF',
+    color: colors.primary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#333',
+    color: colors.textPrimary,
   },
   sessionsList: {
     flex: 1,
@@ -186,21 +187,21 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 18,
-    color: '#999',
+    color: colors.textTertiary,
     marginBottom: 8,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#bbb',
+    color: colors.textLight,
   },
   sessionCard: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: colors.shadow,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
+    shadowOpacity: opacity.shadow.light,
     shadowRadius: 4,
     elevation: 3,
   },
@@ -210,17 +211,17 @@ const styles = StyleSheet.create({
   sessionName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#333',
+    color: colors.textPrimary,
     marginBottom: 6,
   },
   sessionDetails: {
     fontSize: 14,
-    color: '#666',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   sessionDate: {
     fontSize: 12,
-    color: '#999',
+    color: colors.textTertiary,
   },
   sessionActions: {
     flexDirection: 'row',
@@ -231,20 +232,20 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     alignItems: 'center',
   },
   actionButtonText: {
-    color: '#fff',
+    color: colors.textOnPrimary,
     fontSize: 14,
     fontWeight: '600',
   },
   deleteButton: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#FF3B30',
+    borderColor: colors.danger,
   },
   deleteButtonText: {
-    color: '#FF3B30',
+    color: colors.danger,
   },
 });

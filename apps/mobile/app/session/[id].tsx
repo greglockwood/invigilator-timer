@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useAppStore } from '../../src/store/app-store';
 import { createSession, createDesk } from '@invigilator-timer/core';
+import { colors } from '../../src/theme/colors';
 
 export default function SessionScreen() {
   const router = useRouter();
@@ -207,7 +208,7 @@ export default function SessionScreen() {
               onChangeText={setStartHour}
               keyboardType="number-pad"
               placeholder="09"
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.inputPlaceholder}
               maxLength={2}
             />
             <Text style={styles.timeSeparator}>:</Text>
@@ -217,7 +218,7 @@ export default function SessionScreen() {
               onChangeText={setStartMinute}
               keyboardType="number-pad"
               placeholder="00"
-              placeholderTextColor="#999"
+              placeholderTextColor={colors.inputPlaceholder}
               maxLength={2}
             />
           </View>
@@ -233,7 +234,7 @@ export default function SessionScreen() {
                 value={desk.studentName}
                 onChangeText={(text) => handleUpdateDeskName(desk.id, text)}
                 placeholder="Student name (optional)"
-                placeholderTextColor="#999"
+                placeholderTextColor={colors.inputPlaceholder}
               />
               {desks.length > 1 && (
                 <TouchableOpacity
@@ -269,23 +270,23 @@ export default function SessionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
   header: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: colors.border,
   },
   backButton: {
     fontSize: 16,
-    color: '#007AFF',
+    color: colors.primary,
     marginBottom: 8,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.textPrimary,
   },
   content: {
     flex: 1,
@@ -297,17 +298,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.textPrimary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.inputBackground,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: colors.inputBorder,
     borderRadius: 8,
     padding: 16,
     fontSize: 16,
-    color: '#333',
+    color: colors.inputText,
   },
   timeRow: {
     flexDirection: 'row',
@@ -320,7 +321,7 @@ const styles = StyleSheet.create({
   timeSeparator: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.textPrimary,
     marginHorizontal: 8,
   },
   deskRow: {
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
   deskNumber: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.textPrimary,
     width: 80,
   },
   deskInput: {
@@ -342,26 +343,26 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#FF3B30',
+    backgroundColor: colors.danger,
     alignItems: 'center',
     justifyContent: 'center',
   },
   removeButtonText: {
-    color: '#fff',
+    color: colors.textOnPrimary,
     fontSize: 24,
     fontWeight: 'bold',
   },
   addButton: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: colors.primary,
     borderRadius: 8,
     padding: 12,
     alignItems: 'center',
     marginTop: 8,
   },
   addButtonText: {
-    color: '#007AFF',
+    color: colors.primary,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -370,25 +371,25 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   saveButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.success,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 12,
   },
   saveButtonText: {
-    color: '#fff',
+    color: colors.textOnPrimary,
     fontSize: 18,
     fontWeight: '600',
   },
   activateButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
   },
   activateButtonText: {
-    color: '#fff',
+    color: colors.textOnPrimary,
     fontSize: 18,
     fontWeight: '600',
   },
