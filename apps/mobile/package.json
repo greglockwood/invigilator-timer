@@ -9,6 +9,8 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@invigilator-timer/core": "*",
+    "@invigilator-timer/data": "*",
     "@tamagui/core": "^1.144.1",
     "expo": "~54.0.31",
     "expo-constants": "~18.0.13",
