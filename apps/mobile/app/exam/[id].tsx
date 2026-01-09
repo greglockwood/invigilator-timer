@@ -82,7 +82,7 @@ export default function ExamScreen() {
     }
   }, [activeSession, timerState, currentTime, transitionToExam]);
 
-  if (!activeSession || !timerState) {
+  if (!activeSession) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
@@ -92,24 +92,32 @@ export default function ExamScreen() {
     );
   }
 
+  // If no timer state exists, create a default pre-exam state
+  const effectiveTimerState: TimerState = timerState ?? {
+    phase: 'pre_exam',
+    isPaused: false,
+    monotonicStartMs: 0,
+    pausedDurationMs: 0,
+  };
+
   const currentMonotonicMs = performance.now();
-  const sortedDesks = sortDesks(activeSession, timerState);
+  const sortedDesks = sortDesks(activeSession, effectiveTimerState);
 
   // Calculate times
   const generalFinishTime = calculateGeneralFinishEpochMs(activeSession);
   const generalRemaining = calculateGeneralRemainingMs(
     activeSession,
-    timerState,
+    effectiveTimerState,
     currentMonotonicMs
   );
   const readingRemaining = calculateReadingRemainingMs(
     activeSession,
-    timerState,
+    effectiveTimerState,
     currentMonotonicMs
   );
 
-  const isReadingPhase = timerState.phase === 'reading_time';
-  const isPreExam = timerState.phase === 'pre_exam';
+  const isReadingPhase = effectiveTimerState.phase === 'reading_time';
+  const isPreExam = effectiveTimerState.phase === 'pre_exam';
 
   const handleActivate = () => {
     activateExam();
@@ -135,7 +143,7 @@ export default function ExamScreen() {
   };
 
   const handlePauseResume = () => {
-    if (timerState.isPaused) {
+    if (effectiveTimerState.isPaused) {
       resumeExam();
     } else {
       pauseExam();
@@ -210,13 +218,13 @@ export default function ExamScreen() {
                 const deskRemaining = calculateDeskRemainingMs(
                   activeSession,
                   desk,
-                  timerState,
+                  effectiveTimerState,
                   currentMonotonicMs
                 );
                 const adjustedFinish = calculateDeskAdjustedFinishEpochMs(
                   activeSession,
                   desk,
-                  timerState
+                  effectiveTimerState
                 );
                 const finished = isDeskFinished(deskRemaining);
                 const { backgroundColor, borderColor } = getDeskCardColors(deskRemaining, finished);
@@ -284,11 +292,11 @@ export default function ExamScreen() {
 
             <View style={styles.controls}>
               <TouchableOpacity
-                style={[styles.controlButton, timerState.isPaused && styles.resumeButton]}
+                style={[styles.controlButton, effectiveTimerState.isPaused && styles.resumeButton]}
                 onPress={handlePauseResume}
               >
                 <Text style={styles.controlButtonText}>
-                  {timerState.isPaused ? 'Resume' : 'Pause All'}
+                  {effectiveTimerState.isPaused ? 'Resume' : 'Pause All'}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
