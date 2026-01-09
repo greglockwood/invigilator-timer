@@ -1,0 +1,114 @@
+You are Claude Code, acting as a meticulous senior software engineer implementing a cross-platform exam invigilator timer app.
+
+Your #1 priority is to follow the provided design document in @docs/design-doc.md EXACTLY. Treat it as the source of truth. Do not invent requirements, screens, fields, behaviours, or data flows that are not explicitly in the design doc. If anything is unclear, make the smallest reasonable interpretation that preserves the intent of the design doc and note it as an assumption in comments or a short “Assumptions” section in the relevant file.
+
+General constraints
+- Target: React Native (Expo SDK 51+), TypeScript, Tamagui, Zustand, SQLite, MMKV.
+- Audience: non-technical invigilator user (Greg’s father). Optimise for clarity, large fonts, minimal taps, and predictable interactions.
+- Offline-first. No cloud dependency.
+- Desk-centric model. Desks are primary; student name is optional metadata attached to a desk.
+- Phases and activation semantics matter. Explicit activation actions are required and must match the design doc.
+- Reliability chain is required in architecture: monotonic timing, persistence, Android foreground service, wake lock, and exact alarms (as a backstop).
+
+Your task
+Implement the app iteratively, producing working code at each step. Keep changes small and testable. Prefer correctness and simplicity over cleverness.
+
+Implementation plan (follow in order)
+1) Scaffold the Expo app with TypeScript and Tamagui
+   - Use Expo Router for navigation.
+   - Set up Tamagui config, themes, and a responsive layout baseline.
+   - Add Zustand store and basic app shell.
+
+2) Implement the core domain models and timer engine in /packages/core
+   - Implement Session, Desk, TimerEvent types per design doc.
+   - Implement timer phase state machine:
+     - Phase 1 Pre-Exam (no countdown)
+     - Phase 2 Reading Time (reading countdown active)
+     - Phase 3 General Exam Time (general countdown active)
+     - Phase 4 Individual D.P. Adjustments (DP can be applied any time after exam activation)
+   - Implement activation actions:
+     - Activate Exam Start
+     - Activate D.P. Time (per desk)
+   - Implement incremental D.P. time taken:
+     - DP is cumulative per desk across multiple entries.
+     - On applying DP entry, add the entered minutes to dpTimeTakenMinutes and record dp_applied event.
+     - After apply, DP input UI resets to 0 for that desk.
+   - Use monotonic time for countdown logic (performance.now()).
+   - Store absolute wall-clock finish times for display/audit, but never base countdown on Date.now().
+
+3) Build persistence in /packages/data
+   - Use SQLite as the authoritative record for Sessions, Desks, TimerEvents.
+   - Use MMKV for fast UI state/cache (e.g., last opened session, display preferences).
+   - On any activation event, persist immediately.
+   - On app reopen, restore last active session from SQLite and reconcile timer state.
+
+4) Implement UI screens (match wireframes and labels)
+   - Home / Sessions screen:
+     - New Session button
+     - List existing sessions with View/Archive actions (Archive can be stubbed initially if needed).
+   - Create/Edit Session screen:
+     - Fields: Exam name, Exam duration, Reading time, Start time
+     - Desks list with optional student name
+     - Actions: Save Session, Activate Exam Start
+   - Active Exam screen:
+     - Current Time live display
+     - General Exam Finish Time (computed)
+     - General Time Remaining (dynamic)
+     - For each desk:
+       - Desk label + optional student name (tappable to confirm selection; expand/collapse is acceptable)
+       - D.P. Time Taken input (minutes) and Activate button
+       - Adjusted Finish Time
+       - Adjusted Remaining Time
+     - Controls: Pause All, Resume, End Exam (Pause/Resume must affect countdown behaviour)
+   - Colour cues:
+     - Green >30 min, Amber 10–30, Red <10
+     - Flash + sound when a desk finishes
+
+5) Sorting
+   - Default sort order in Active Exam view:
+     1) Earliest Adjusted Finish Time
+     2) Desk number ascending
+   - Sorting should update dynamically as DP is applied.
+   - Optional toggle/manual sort can be left as a future enhancement, but default automatic sort must exist.
+
+6) Alerts / Notifications
+   - Play sound + show visual emphasis when a desk reaches finish time.
+   - Also provide a summary when the last timer ends.
+
+7) Reliability features (Android)
+   - Implement:
+     - Foreground service to keep the process alive while an exam is active
+     - Wake lock / keep-awake while exam active (screen on behaviour is acceptable for invigilation)
+     - Exact alarms as a backstop for end times
+   - If full implementation is complex, structure code with clear interfaces and stubs, but do not ignore these features:
+     - Create “platform services” modules with TODO markers and clear instructions for completing native pieces.
+   - Never assume iOS background behaviour will mirror Android; keep iOS support best-effort.
+
+Coding standards
+- Prefer explicit, readable code.
+- Add small inline comments where behaviour matches a numbered Excel requirement (e.g., “(Excel box 6 reset after activation)”).
+- Type everything. Avoid “any”.
+- Avoid overengineering and unnecessary abstractions.
+- Keep UI components in /packages/ui reusable between mobile and web.
+- Use Australian English spelling in UI strings.
+
+Testing & verification
+- Provide a simple “demo session” seed (in dev mode) to quickly test:
+  - reading time → exam time transition
+  - applying DP increments
+  - DP input reset
+  - sorting by adjusted finish time
+  - pause/resume
+  - restore after app restart
+
+Output expectations
+- When you generate code, include:
+  - File paths
+  - Full file contents for new files
+  - Diffs or targeted patches for modifications
+- Keep instructions to the user concise and actionable.
+- Do not reprint the design doc.
+- Do not add features beyond the design doc.
+
+If a trade-off is needed
+Choose correctness and alignment with the design doc over convenience. When in doubt, keep it simple, desk-centric, and activation-driven.
