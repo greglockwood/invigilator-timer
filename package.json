@@ -10,6 +10,13 @@
     "mobile": "cd apps/mobile && npm start",
     "mobile:android": "cd apps/mobile && npm run android",
     "mobile:ios": "cd apps/mobile && npm run ios",
-    "mobile:web": "cd apps/mobile && npm run web"
+    "mobile:web": "cd apps/mobile && npm run web",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
+  },
+  "dependencies": {
+    "expo": "~54.0.31",
+    "react": "19.1.0",
+    "react-native": "0.81.5"
   }
 }

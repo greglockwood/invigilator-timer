@@ -1,27 +1,21 @@
 /**
- * MMKV-based cache for fast UI state persistence.
+ * In-memory cache for fast UI state persistence.
  * Used for storing last active session, UI preferences, etc.
  *
- * NOTE: This is in the mobile app (not packages/data) because MMKV
- * is a React Native native module and must be imported from the app's node_modules.
+ * TODO: Replace with MMKV for production
+ * MMKV provides lightning-fast synchronous API that beats AsyncStorage,
+ * but currently has module resolution issues in the monorepo setup.
+ * Once Metro bundler is properly configured or we migrate to a simpler
+ * project structure, we should replace this with react-native-mmkv.
+ *
+ * For now, using simple in-memory storage (data lost on app restart,
+ * which is acceptable for cache).
  */
-
-import { MMKV } from 'react-native-mmkv';
 
 /**
- * Lazy-initialized storage instance.
- * MMKV requires the native bridge to be ready, so we can't initialize at module load time.
+ * Simple in-memory storage.
  */
-let storage: MMKV | null = null;
-
-function getStorage(): MMKV {
-  if (!storage) {
-    storage = new MMKV({
-      id: 'invigilator-timer-cache',
-    });
-  }
-  return storage;
-}
+const memoryStorage: Record<string, string> = {};
 
 /**
  * Cache keys
@@ -35,22 +29,21 @@ const KEYS = {
  * Get the last active session ID.
  */
 export function getLastActiveSessionId(): string | null {
-  const value = getStorage().getString(KEYS.LAST_ACTIVE_SESSION_ID);
-  return value ?? null;
+  return memoryStorage[KEYS.LAST_ACTIVE_SESSION_ID] ?? null;
 }
 
 /**
  * Set the last active session ID.
  */
 export function setLastActiveSessionId(sessionId: string): void {
-  getStorage().set(KEYS.LAST_ACTIVE_SESSION_ID, sessionId);
+  memoryStorage[KEYS.LAST_ACTIVE_SESSION_ID] = sessionId;
 }
 
 /**
  * Clear the last active session ID.
  */
 export function clearLastActiveSessionId(): void {
-  getStorage().delete(KEYS.LAST_ACTIVE_SESSION_ID);
+  delete memoryStorage[KEYS.LAST_ACTIVE_SESSION_ID];
 }
 
 /**
@@ -70,7 +63,7 @@ export interface CachedTimerState {
  */
 export function getCachedTimerState(sessionId: string): CachedTimerState | null {
   const key = `${KEYS.TIMER_STATE_PREFIX}${sessionId}`;
-  const value = getStorage().getString(key);
+  const value = memoryStorage[key];
 
   if (!value) {
     return null;
@@ -88,7 +81,7 @@ export function getCachedTimerState(sessionId: string): CachedTimerState | null 
  */
 export function setCachedTimerState(sessionId: string, state: CachedTimerState): void {
   const key = `${KEYS.TIMER_STATE_PREFIX}${sessionId}`;
-  getStorage().set(key, JSON.stringify(state));
+  memoryStorage[key] = JSON.stringify(state);
 }
 
 /**
@@ -96,12 +89,12 @@ export function setCachedTimerState(sessionId: string, state: CachedTimerState):
  */
 export function clearCachedTimerState(sessionId: string): void {
   const key = `${KEYS.TIMER_STATE_PREFIX}${sessionId}`;
-  getStorage().delete(key);
+  delete memoryStorage[key];
 }
 
 /**
  * Clear all cache data.
  */
 export function clearAllCache(): void {
-  getStorage().clearAll();
+  Object.keys(memoryStorage).forEach(key => delete memoryStorage[key]);
 }

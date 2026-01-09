@@ -26,7 +26,7 @@ A cross-platform exam invigilation timer for managing desks with individual stud
   - Sessions, desks, and timer_events tables
   - Full audit trail of all activation events
   - Transaction-based saves for atomicity
-- **MMKV** for fast UI state caching
+- **In-memory cache** for UI state (MMKV planned for v2)
   - Last active session tracking
   - Timer state recovery after app restart
 
@@ -66,6 +66,20 @@ A cross-platform exam invigilation timer for managing desks with individual stud
 - Database initialization on app launch
 - Session persistence on every activation
 - Timer state caching for app restart recovery
+
+### 🔄 Cache Implementation Note
+
+**Current:** Simple in-memory cache (data lost on app restart)
+- Sufficient for current use case
+- Zero configuration issues
+- Works immediately
+
+**Planned:** MMKV for production (v2)
+- Lightning-fast synchronous API (beats AsyncStorage performance)
+- Persistent across app restarts
+- Zero-dependency native module
+- Currently blocked by Metro bundler module resolution in monorepo
+- Will be added once Metro config is refined or project structure simplified
 
 ### ⚠️ Partially Implemented / TODO
 
@@ -112,7 +126,7 @@ Requires native module integration:
 4. **Incremental D.P.** - D.P. time is cumulative; multiple entries per desk allowed
 5. **Audit trail** - Every activation event logged to SQLite
 6. **Offline-first** - No Internet required
-7. **Reliability chain** - UI → Timer Engine → SQLite/MMKV → Foreground Service → Wake Lock → Exact Alarms
+7. **Reliability chain** - UI → Timer Engine → SQLite/Cache → Foreground Service → Wake Lock → Exact Alarms
 
 ## Project Structure
 
@@ -138,7 +152,7 @@ invigilator-timer/
 │   └── data/                   # Persistence layer
 │       └── src/
 │           ├── database.ts     # SQLite operations
-│           └── cache.ts        # MMKV cache
+│           └── cache.ts        # In-memory cache (MMKV stub)
 └── docs/
     └── design-doc.md           # Full specification
 ```
