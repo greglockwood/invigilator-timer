@@ -5,9 +5,20 @@
 
 import { MMKV } from 'react-native-mmkv';
 
-const storage = new MMKV({
-  id: 'invigilator-timer-cache',
-});
+/**
+ * Lazy-initialized storage instance.
+ * MMKV requires the native bridge to be ready, so we can't initialize at module load time.
+ */
+let storage: MMKV | null = null;
+
+function getStorage(): MMKV {
+  if (!storage) {
+    storage = new MMKV({
+      id: 'invigilator-timer-cache',
+    });
+  }
+  return storage;
+}
 
 /**
  * Cache keys
@@ -21,7 +32,7 @@ const KEYS = {
  * Get the last active session ID.
  */
 export function getLastActiveSessionId(): string | null {
-  const value = storage.getString(KEYS.LAST_ACTIVE_SESSION_ID);
+  const value = getStorage().getString(KEYS.LAST_ACTIVE_SESSION_ID);
   return value ?? null;
 }
 
@@ -29,14 +40,14 @@ export function getLastActiveSessionId(): string | null {
  * Set the last active session ID.
  */
 export function setLastActiveSessionId(sessionId: string): void {
-  storage.set(KEYS.LAST_ACTIVE_SESSION_ID, sessionId);
+  getStorage().set(KEYS.LAST_ACTIVE_SESSION_ID, sessionId);
 }
 
 /**
  * Clear the last active session ID.
  */
 export function clearLastActiveSessionId(): void {
-  storage.delete(KEYS.LAST_ACTIVE_SESSION_ID);
+  getStorage().delete(KEYS.LAST_ACTIVE_SESSION_ID);
 }
 
 /**
@@ -56,7 +67,7 @@ export interface CachedTimerState {
  */
 export function getCachedTimerState(sessionId: string): CachedTimerState | null {
   const key = `${KEYS.TIMER_STATE_PREFIX}${sessionId}`;
-  const value = storage.getString(key);
+  const value = getStorage().getString(key);
 
   if (!value) {
     return null;
@@ -74,7 +85,7 @@ export function getCachedTimerState(sessionId: string): CachedTimerState | null 
  */
 export function setCachedTimerState(sessionId: string, state: CachedTimerState): void {
   const key = `${KEYS.TIMER_STATE_PREFIX}${sessionId}`;
-  storage.set(key, JSON.stringify(state));
+  getStorage().set(key, JSON.stringify(state));
 }
 
 /**
@@ -82,12 +93,12 @@ export function setCachedTimerState(sessionId: string, state: CachedTimerState):
  */
 export function clearCachedTimerState(sessionId: string): void {
   const key = `${KEYS.TIMER_STATE_PREFIX}${sessionId}`;
-  storage.delete(key);
+  getStorage().delete(key);
 }
 
 /**
  * Clear all cache data.
  */
 export function clearAllCache(): void {
-  storage.clearAll();
+  getStorage().clearAll();
 }
