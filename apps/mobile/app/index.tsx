@@ -4,10 +4,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAppStore } from '../src/store/app-store';
 import { formatTimeAMPM } from '@invigilator-timer/core';
+import { createDemoSession } from '../src/utils/demo-seed';
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { sessionsList, refreshSessionsList, deleteSessionById, isInitialized } = useAppStore();
+  const { sessionsList, refreshSessionsList, deleteSessionById, isInitialized, createSession } = useAppStore();
 
   useEffect(() => {
     if (isInitialized) {
@@ -17,6 +18,17 @@ export default function HomeScreen() {
 
   const handleNewSession = () => {
     router.push('/session/new');
+  };
+
+  const handleCreateDemo = async () => {
+    try {
+      const demoSession = createDemoSession();
+      await createSession(demoSession);
+      Alert.alert('Demo Created', 'A demo session has been created. Starting in 2 minutes with 5 min exam + 1 min reading time.');
+      await refreshSessionsList();
+    } catch (error) {
+      Alert.alert('Error', 'Failed to create demo session');
+    }
   };
 
   const handleViewSession = (sessionId: string) => {
@@ -53,6 +65,10 @@ export default function HomeScreen() {
       <View style={styles.content}>
         <TouchableOpacity style={styles.newButton} onPress={handleNewSession}>
           <Text style={styles.newButtonText}>New Session</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.demoButton} onPress={handleCreateDemo}>
+          <Text style={styles.demoButtonText}>Create Demo Session (Quick Test)</Text>
         </TouchableOpacity>
 
         <View style={styles.sectionHeader}>
@@ -130,11 +146,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 12,
   },
   newButtonText: {
     color: '#fff',
     fontSize: 18,
+    fontWeight: '600',
+  },
+  demoButton: {
+    backgroundColor: '#fff',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#007AFF',
+    marginBottom: 24,
+  },
+  demoButtonText: {
+    color: '#007AFF',
+    fontSize: 16,
     fontWeight: '600',
   },
   sectionHeader: {
