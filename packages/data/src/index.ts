@@ -2,8 +2,11 @@
  * @invigilator-timer/data
  *
  * Persistence layer for the Invigilator Timer app.
- * SQLite for authoritative storage, MMKV for fast UI state cache.
+ * SQLite for authoritative storage.
+ *
+ * NOTE: MMKV cache functions are in apps/mobile/src/services/cache.ts
+ * because MMKV is a React Native native module.
  */
 
 export * from './database';
-export * from './cache';
+export type { CachedTimerState } from './cache';

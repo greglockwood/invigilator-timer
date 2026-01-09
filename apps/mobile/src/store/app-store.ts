@@ -23,12 +23,14 @@ import {
   loadSession,
   listSessions,
   deleteSession,
+} from '@invigilator-timer/data';
+import {
   getCachedTimerState,
   setCachedTimerState,
   setLastActiveSessionId,
   clearLastActiveSessionId,
   clearCachedTimerState,
-} from '@invigilator-timer/data';
+} from '../services/cache';
 
 interface AppState {
   // Database
