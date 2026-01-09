@@ -52,15 +52,14 @@ export interface Session {
 }
 
 /**
- * Timer phase enum representing the four distinct phases of exam execution.
+ * Timer phase representing the four distinct phases of exam execution.
  * Phase transitions are activation-driven per design doc.
  */
-export enum TimerPhase {
-  PreExam = 'pre_exam',                 // Phase 1: Setup, no countdowns active
-  ReadingTime = 'reading_time',         // Phase 2: Reading countdown active
-  ExamActive = 'exam_active',           // Phase 3: General exam countdown active
-  DPAdjustments = 'dp_adjustments',     // Phase 4: Individual D.P. adjustments (can overlap with Phase 3)
-}
+export type TimerPhase =
+  | 'pre_exam'          // Phase 1: Setup, no countdowns active
+  | 'reading_time'      // Phase 2: Reading countdown active
+  | 'exam_active'       // Phase 3: General exam countdown active
+  | 'dp_adjustments';   // Phase 4: Individual D.P. adjustments (can overlap with Phase 3)
 
 /**
  * Runtime timer state (not persisted, computed from Session + monotonic time).

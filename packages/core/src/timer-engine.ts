@@ -17,7 +17,7 @@ export function calculateGeneralRemainingMs(
   timerState: TimerState,
   currentMonotonicMs: number,
 ): number {
-  if (timerState.phase === TimerPhase.PreExam) {
+  if (timerState.phase === 'pre_exam') {
     return session.examDurationMinutes * 60 * 1000;
   }
 
@@ -41,7 +41,7 @@ export function calculateReadingRemainingMs(
   timerState: TimerState,
   currentMonotonicMs: number,
 ): number {
-  if (timerState.phase !== TimerPhase.ReadingTime) {
+  if (timerState.phase !== 'reading_time') {
     return 0;
   }
 
@@ -68,7 +68,7 @@ export function calculateDeskRemainingMs(
   timerState: TimerState,
   currentMonotonicMs: number,
 ): number {
-  if (timerState.phase === TimerPhase.PreExam || timerState.phase === TimerPhase.ReadingTime) {
+  if (timerState.phase === 'pre_exam' || timerState.phase === 'reading_time') {
     return (session.examDurationMinutes + desk.dpTimeTakenMinutes) * 60 * 1000;
   }
 
@@ -185,7 +185,7 @@ export function activateExamStart(
   };
 
   const timerState: TimerState = {
-    phase: hasReadingTime ? TimerPhase.ReadingTime : TimerPhase.ExamActive,
+    phase: hasReadingTime ? 'reading_time' : 'exam_active',
     isPaused: false,
     monotonicStartMs: currentMonotonicMs,
     pausedDurationMs: 0,
@@ -222,7 +222,7 @@ export function transitionToExamActive(
   // Reset monotonic start to current time for exam phase
   const updatedTimerState: TimerState = {
     ...timerState,
-    phase: TimerPhase.ExamActive,
+    phase: 'exam_active',
     monotonicStartMs: currentMonotonicMs,
     pausedDurationMs: 0,
   };
