@@ -121,14 +121,40 @@ export default function SessionScreen() {
 
     const startTimeEpochMs = startDate.getTime();
 
-    // Create session
-    const session = createSession(
-      examName.trim(),
-      examDurationNum,
-      readingTimeNum,
-      startTimeEpochMs,
-      desks.length
-    );
+    // Create or update session
+    let session;
+    if (isNew) {
+      // Create new session with new ID
+      session = createSession(
+        examName.trim(),
+        examDurationNum,
+        readingTimeNum,
+        startTimeEpochMs,
+        desks.length
+      );
+    } else {
+      // Reuse existing session ID when editing
+      const existingSession = useAppStore.getState().activeSession;
+      if (!existingSession) {
+        Alert.alert('Error', 'Session not found');
+        return;
+      }
+
+      session = createSession(
+        examName.trim(),
+        examDurationNum,
+        readingTimeNum,
+        startTimeEpochMs,
+        desks.length
+      );
+
+      // Preserve the existing session ID and desk IDs
+      session.id = existingSession.id;
+      session.desks = session.desks.map((desk, index) => ({
+        ...desk,
+        id: existingSession.desks[index]?.id ?? desk.id,
+      }));
+    }
 
     // Update desk student names
     session.desks = session.desks.map((desk, index) => ({
